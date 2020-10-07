@@ -39,14 +39,8 @@ KEYWORDS = {
 }
 
 SIGNED_KEYWORDS = {
-    "+": {
-        "NaN": TokenType.NAN,
-        "Infinity": TokenType.INFINITY,
-    },
-    "-": {
-        "NaN": TokenType.NAN,
-        "Infinity": TokenType.MINUS_INFINITY,
-    }
+    "+": {"NaN": TokenType.NAN, "Infinity": TokenType.INFINITY,},
+    "-": {"NaN": TokenType.NAN, "Infinity": TokenType.MINUS_INFINITY,},
 }
 
 CHAR_TOKENS = {
@@ -153,19 +147,30 @@ class Scanner:
         while self._peek().isdigit():
             self._advance()
 
+        is_int = True
         if self._peek() == "." and self._peek(2).isdigit():
+            is_int = False
             # consume separator
             self._advance()
             while self._peek().isdigit():
                 self._advance()
 
-        if self._peek() in "eE" and self._peek(2) in "-+1234567890":
+        if self._peek() in "eE" and (
+            (self._peek(2) in "-+" and self._peek(3).isdigit())
+            or self._peek(2).isdigit()
+        ):
+            is_int = False
             # consume e
             self._advance()
             while self._peek() in "-+1234567890":
                 self._advance()
 
-        value = float(self.source[self.start : self.current])
+        text = self.source[self.start : self.current]
+        if is_int:
+            value = int(text)
+        else:
+            value = float(text)
+
         return self._new_token(TokenType.NUMBER, value)
 
     def _keyword(self, sign=""):
