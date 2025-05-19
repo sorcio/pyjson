@@ -162,7 +162,10 @@ class Scanner:
             is_int = False
             # consume e
             self._advance()
-            while self._peek() in "-+1234567890":
+            # consume sign
+            if self._peek() in "+-":
+                self._advance()
+            while self._peek().isdigit():
                 self._advance()
 
         text = self.source[self.start : self.current]

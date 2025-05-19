@@ -86,7 +86,7 @@ strings_to_test = [
 ]
 
 failing_strings = [
-    "", "foo", "foo\n\""
+    "", "foo", "foo\n\"", "5e6+"
 ]
 
 
